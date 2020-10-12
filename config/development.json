@@ -5,7 +5,13 @@
   },
   "params": {
     "key": "ba65929cdeac0ae95336a8890617a608",
-    "token": "d163d9999aac4236bffb03bbc767e59d95653f64159bf464ba4a95d96e07f6be"
+    "token": "d163d9999aac4236bffb03bbc767e59d95653f64159bf464ba4a95d96e07f6be",
+    "id_board": "5f81f78f8e64647299bf0694",
+    "id_list_to_do": "5f81f78f8e64647299bf0695",
+    "id_label_bug": "5f81f78fcdabcf46c07a092b",
+    "id_label_maintenance": "5f81f78fcdabcf46c07a0927",
+    "id_label_research": "5f81f78fcdabcf46c07a0924",
+    "id_label_test": "5f81f78fcdabcf46c07a0929"
   },
   "apis": {
     "trello": "https://api.trello.com"

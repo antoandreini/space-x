@@ -4,68 +4,92 @@ const axios = require('axios');
 
 module.exports = (app) => {
     const serverConfig = config.get('server');
+    const context = serverConfig.context;
+
     const paramsConfig = config.get('params');
     const apisConfig = config.get('apis');
-    const context = serverConfig.context;
 
     app.post(encodeURI(context + '/card'), async (req, res) => {
         try {
-            const { type } = req.body;
-            const id_list_to_do = "5f81f78f8e64647299bf0695";
-            const id_board = "5f81f78f8e64647299bf0694";
-            const { description } = req.body;
+            const { type, description } = req.body;
+            const urlNewCard = encodeURI(`${apisConfig.trello}/1/cards?key=${paramsConfig.key}&token=${paramsConfig.token}&idList=${paramsConfig.id_list_to_do}`);
             switch (type) {
                 case "issue": {
                     const { title } = req.body;
-                    const urlNewCard = encodeURI(`${apisConfig.trello}/1/cards?key=${paramsConfig.key}&token=${paramsConfig.token}&idList=${id_list_to_do}`);
-                    signale.info("url post", encodeURI(urlNewCard));
+                    if (title && description) {
+                        signale.info("url post", urlNewCard);
 
-                    const response = await axios.post(urlNewIssue, { "name": title, "desc": description });
-                    signale.info("The response is", response)
-                    res.json({ status: "200", message: "sucess." });
+                        //Create an issue card.
+                        const response = await axios.post(urlNewCard, { "name": title, "desc": description });
+                        signale.info("The response is", response);
+
+                        res.json({ status: "200", message: "sucess.", body: { idCard: response.data.id } });
+                    }
+                    else { //The parameters are not correct for an issue
+                        res.json({ status: "409", message: "To create an issue card you need a title and a description." });
+                    }
                     break;
                 }
-                case "bug": {            
-                    const id_label_bug="5f81f78fcdabcf46c07a092b"
-                    const urlNewCard = encodeURI(`${apisConfig.trello}/1/cards?key=${paramsConfig.key}&token=${paramsConfig.token}&idList=${id_list_to_do}`);
-                    signale.info("url post", encodeURI(urlNewCard))
+                case "bug": {
+                    if (description) {
+                        signale.info("url post", encodeURI(urlNewCard))
 
-                    //Get Members
-                    const urlGetMembers = encodeURI(`${apisConfig.trello}/1/boards/${id_board}/memberships?key=${paramsConfig.key}&token=${paramsConfig.token}&idList=${id_list_to_do}`);
-                    const responseMembers = await axios.get(urlGetMembers);
+                        //Get Members
+                        const urlGetMembers = encodeURI(`${apisConfig.trello}/1/boards/${paramsConfig.id_board}/memberships?key=${paramsConfig.key}&token=${paramsConfig.token}`);
+                        const responseMembers = await axios.get(urlGetMembers);
 
-                    const aleatoryMember = Math.round(Math.random() * (responseMembers.data.length - 1));
-                    const aleatoryNumber = Math.round(Math.random() * (100 - 1));
+                        //This function is a random in the member array
+                        const aleatoryMember = Math.round(Math.random() * (responseMembers.data.length - 1));
+                        const idMember = responseMembers.data[aleatoryMember].idMember;
+                        
+                        //Function that calculates random number between 1 and 100 for the title
+                        const aleatoryNumber = Math.round(Math.random() * (100 - 1));
+                        
+                        //The random word in the title is the first in the description
+                        const word = description.substr(0, description.indexOf(" "));
 
-                    const word = description.substr(0, description.indexOf(" "));
-                    const title = `bug-${word}-${aleatoryNumber}`;
+                        const title = `bug-${word}-${aleatoryNumber}`;
 
-                    const response = await axios.post(urlNewCard, { "name": title, "desc": description, "idMembers": [responseMembers.data[aleatoryMember].idMember], "idLabels": [id_label_bug]});
-                    signale.info("The response is", response)
-                    res.json({ status: "200", message: "sucess." });
-
+                        //Create a bug card.
+                        const response = await axios.post(urlNewCard, { "name": title, "desc": description, "idMembers": [idMember], "idLabels": [paramsConfig.id_label_bug] });
+                        signale.info("The response is", response)
+                        
+                        res.json({ status: "200", message: "sucess.", body: { idCard: response.data.id } });
+                    }
+                    else { //The parameters are not correct for a bug
+                        res.json({ status: "409", message: "To create a bug card you need a description." });
+                    }
                     break;
                 }
                 case "task": {
-                    const urlNewCard = encodeURI(`${apisConfig.trello}/1/cards?key=${paramsConfig.key}&token=${paramsConfig.token}&idList=${id_list_to_do}`);
-                    signale.info("url post", encodeURI(urlNewCard))
-                    const {title, category}=req.body;
-                    let id_label="";
-                    switch(category){
-                        case "Maintenance":
-                            id_label="5f81f78fcdabcf46c07a0927";
-                            break;
-                        case "Research":
-                            id_label="5f81f78fcdabcf46c07a0924";
-                            break;
-                        case "Test":
-                            id_label="5f81f78fcdabcf46c07a0929";
-                            break;
+                    const { title, category } = req.body;
+                    if (title && category) {
+                        signale.info("url post", encodeURI(urlNewCard))
+                        let id_label = "";
+                        
+                        switch (category) {
+                            case "Maintenance":
+                                id_label = paramsConfig.id_label_maintenance;
+                                break;
+                            case "Research":
+                                id_label = paramsConfig.id_label_research;
+                                break;
+                            case "Test":
+                                id_label = paramsConfig.id_label_test;
+                                break;
+                            default: //Category is not accepted
+                                res.json({ status: "409", message: "For a task card the accepted categories are: Maintenance, research and test." });
+                                break;
+                        }
+                        
+                        //Create a task card.
+                        const response = await axios.post(urlNewCard, { "name": title, "idLabels": [id_label] });
+                        signale.info("The response is", response)
+                        res.json({ status: "200", message: "sucess.", body: { idCard: response.data.id } });
                     }
-
-                    const response = await axios.post(urlNewCard, { "name": title, "desc": description, "idLabels": [id_label]});
-                    signale.info("The response is", response)
-                    res.json({ status: "200", message: "sucess." });
+                    else { //The parameters are not correct for a task
+                        res.json({ status: "409", message: "To create a task card you need a title and a category." });
+                    }
                     break;
                 }
                 default: {
