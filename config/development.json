@@ -1,0 +1,13 @@
+{
+  "server": {
+    "port": 8080,
+    "context": "/api"
+  },
+  "params": {
+    "key": "ba65929cdeac0ae95336a8890617a608",
+    "token": "d163d9999aac4236bffb03bbc767e59d95653f64159bf464ba4a95d96e07f6be"
+  },
+  "apis": {
+    "trello": "https://api.trello.com"
+  }
+}

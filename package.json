@@ -1,0 +1,29 @@
+{
+  "name": "space-x",
+  "version": "1.0.0",
+  "description": "The next launch to the international space station",
+  "scripts": {
+    "start": "nodemon --inspect=0.0.0.0:9228 ./server.js",
+    "test": "node -v"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antoandreini/space-x.git"
+  },
+  "author": "Antonella Andreini",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/antoandreini/space-x/issues"
+  },
+  "homepage": "https://github.com/antoandreini/space-x#readme",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "config": "^3.3.2",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4",
+    "request": "^2.88.2",
+    "signale-logger": "^1.5.0"
+  }
+}
