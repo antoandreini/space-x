@@ -22,6 +22,7 @@ npm start
 This project will be by default at **http://localhost:8080**
 
 ## Use
+The Trello board currently in use is https://trello.com/b/tqulOYEn/space-x
 
 ### To create your first task:
 
