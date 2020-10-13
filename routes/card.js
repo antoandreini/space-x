@@ -23,10 +23,12 @@ module.exports = (app) => {
                         const response = await axios.post(urlNewCard, { "name": title, "desc": description });
                         signale.info("The response is", response);
 
-                        res.json({ status: "200", message: "sucess.", body: { idCard: response.data.id } });
+                        res.status(200);
+                        res.send({ message: "success.", idCard: response.data.id });
                     }
                     else { //The parameters are not correct for an issue
-                        res.json({ status: "409", message: "To create an issue card you need a title and a description." });
+                        res.status(409);
+                        res.send({ message: "To create an issue card you need a title and a description." });
                     }
                     break;
                 }
@@ -41,10 +43,10 @@ module.exports = (app) => {
                         //This function is a random in the member array
                         const aleatoryMember = Math.round(Math.random() * (responseMembers.data.length - 1));
                         const idMember = responseMembers.data[aleatoryMember].idMember;
-                        
+
                         //Function that calculates random number between 1 and 100 for the title
                         const aleatoryNumber = Math.round(Math.random() * (100 - 1));
-                        
+
                         //The random word in the title is the first in the description
                         const word = description.substr(0, description.indexOf(" "));
 
@@ -53,11 +55,13 @@ module.exports = (app) => {
                         //Create a bug card.
                         const response = await axios.post(urlNewCard, { "name": title, "desc": description, "idMembers": [idMember], "idLabels": [paramsConfig.id_label_bug] });
                         signale.info("The response is", response)
-                        
-                        res.json({ status: "200", message: "sucess.", body: { idCard: response.data.id } });
+
+                        res.status(200);
+                        res.send({ message: "success.", idCard: response.data.id });
                     }
                     else { //The parameters are not correct for a bug
-                        res.json({ status: "409", message: "To create a bug card you need a description." });
+                        res.status(409);
+                        res.send({ message: "To create a bug card you need a description." });
                     }
                     break;
                 }
@@ -66,7 +70,7 @@ module.exports = (app) => {
                     if (title && category) {
                         signale.info("url post", encodeURI(urlNewCard))
                         let id_label = "";
-                        
+
                         switch (category) {
                             case "Maintenance":
                                 id_label = paramsConfig.id_label_maintenance;
@@ -78,28 +82,33 @@ module.exports = (app) => {
                                 id_label = paramsConfig.id_label_test;
                                 break;
                             default: //Category is not accepted
-                                res.json({ status: "409", message: "For a task card the accepted categories are: Maintenance, research and test." });
+                                res.status(409);
+                                res.send({ message: "For a task card the accepted categories are: Maintenance, research and test." });
                                 break;
                         }
-                        
+
                         //Create a task card.
                         const response = await axios.post(urlNewCard, { "name": title, "idLabels": [id_label] });
                         signale.info("The response is", response)
-                        res.json({ status: "200", message: "sucess.", body: { idCard: response.data.id } });
+                        res.status(200);
+                        res.send({ message: "success.", idCard: response.data.id });
                     }
                     else { //The parameters are not correct for a task
-                        res.json({ status: "409", message: "To create a task card you need a title and a category." });
+                        res.status(409);
+                        res.send({ message: "To create a task card you need a title and a category." });
                     }
                     break;
                 }
                 default: {
-                    res.json({ status: "409", message: "The card type was not recognized." });
+                    res.status(409);
+                    res.send({ message: "The card type was not recognized." });
                     break;
                 }
             }
         } catch (error) {
             signale.error(error)
-            res.json({ status: "409", message: "The card could not be created." });
+            res.status(409);
+            res.send({ message: "The card could not be created." });
         }
     });
 }
