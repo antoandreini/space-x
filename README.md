@@ -26,7 +26,7 @@ The Trello board currently in use is https://trello.com/b/tqulOYEn/space-x
 
 ### To create your first task:
 
-First you must make a POST to the path **/api/card** and you must send a body similar to:
+First do a POST to the path **/api/card** and send a body similar to:
 ```sh
 {
     "type": "issue",
